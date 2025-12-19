@@ -8,6 +8,38 @@ from database import get_connection
 
 app = FastAPI()
 
+
+# -------------------------------
+# CREAR TABLAS AL INICIAR
+# -------------------------------
+
+@app.on_event("startup")
+def startup():
+    conn = get_connection()
+    cur = conn.cursor()
+
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS usuario (
+        id_user INTEGER PRIMARY KEY AUTOINCREMENT,
+        nombre TEXT NOT NULL,
+        usuario TEXT NOT NULL UNIQUE,
+        contrasena TEXT NOT NULL
+    )
+    """)
+
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS codigos (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        codigo TEXT UNIQUE,
+        usado INTEGER DEFAULT 0,
+        usado_en TEXT
+    )
+    """)
+
+    conn.commit()
+    conn.close()
+
+
 # -------------------------------
 # MODELOS
 # -------------------------------
@@ -31,7 +63,7 @@ class ActivateData(BaseModel):
 # UTILIDADES
 # -------------------------------
 
-def random_str(n):
+def random_str(n: int) -> str:
     return "".join(
         random.choices(string.ascii_letters + string.digits, k=n)
     )
