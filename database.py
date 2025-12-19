@@ -1,4 +1,6 @@
 import sqlite3
 
 def get_connection():
-    return sqlite3.connect("users.db", check_same_thread=False)
+    conn = sqlite3.connect("users.db")
+    conn.row_factory = sqlite3.Row
+    return conn

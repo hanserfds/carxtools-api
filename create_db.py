@@ -1,9 +1,9 @@
-import sqlite3
+from database import get_connection
 
-conn = sqlite3.connect("users.db")
-cursor = conn.cursor()
+conn = get_connection()
+cur = conn.cursor()
 
-cursor.execute("""
+cur.execute("""
 CREATE TABLE IF NOT EXISTS usuario (
     id_user INTEGER PRIMARY KEY AUTOINCREMENT,
     nombre TEXT NOT NULL,
@@ -12,10 +12,14 @@ CREATE TABLE IF NOT EXISTS usuario (
 )
 """)
 
-cursor.execute(
-    "INSERT INTO usuario (nombre, usuario, contrasena) VALUES (?, ?, ?)",
-    ("Juan Perez", "juan", "1234")
+cur.execute("""
+CREATE TABLE IF NOT EXISTS codigos (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    codigo TEXT UNIQUE,
+    usado INTEGER DEFAULT 0,
+    usado_en TEXT
 )
+""")
 
 conn.commit()
 conn.close()
